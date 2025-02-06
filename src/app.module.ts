@@ -11,6 +11,7 @@ import { mongooseConfig } from './config/mongoose.config';
   imports: [
     RoomModule,
     ScheduleModule,
+    ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

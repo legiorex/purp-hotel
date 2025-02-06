@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
-import { RoomModel } from './room.model';
+import { RoomModel } from './model/room.model';
 import { FindRoomDto } from './dto/find-room.dto';
 
 @Controller('room')
