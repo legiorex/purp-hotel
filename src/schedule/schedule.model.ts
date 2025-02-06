@@ -3,8 +3,6 @@ interface BookedRoom {
   room: number;
   bookedBy: string;
   bookedFor: string;
-  bookedStart: Date;
-  bookedEnd: Date;
   isPaid: boolean;
 }
 
