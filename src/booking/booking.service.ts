@@ -53,4 +53,11 @@ export class BookingService {
 
     return await this.bookingModel.findByIdAndUpdate(id, dto, { new: true }).exec();
   }
+
+  async findById(id: string): Promise<BookingModel | null> {
+    return this.bookingModel.findById(id).exec();
+  }
+  async findAll(): Promise<BookingModel[]> {
+    return this.bookingModel.find().exec();
+  }
 }
