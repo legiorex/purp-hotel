@@ -2,14 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { RoomModel } from './model/room.model';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { RoomDto } from './dto/room.dto';
-import { FindRoomDto } from './dto/find-room.dto';
+import { FindRoomDto, CreateRoomDto, UpdateRoomDto } from './dto/room.dto';
 
 @Injectable()
 export class RoomService {
   constructor(@InjectModel(RoomModel.name) private readonly roomModel: Model<RoomModel>) {}
 
-  async create(dto: RoomDto): Promise<RoomModel> {
+  async create(dto: CreateRoomDto): Promise<RoomModel> {
     return this.roomModel.create(dto);
   }
 
@@ -21,7 +20,7 @@ export class RoomService {
     return this.roomModel.find().exec();
   }
 
-  async update(id: string, dto: RoomDto): Promise<RoomModel | null> {
+  async update(id: string, dto: UpdateRoomDto): Promise<RoomModel | null> {
     return this.roomModel.findByIdAndUpdate(id, dto, { new: true }).exec();
   }
 

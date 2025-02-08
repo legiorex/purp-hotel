@@ -1,4 +1,4 @@
-import { IsString, IsInt, IsDate, IsDateString, IsEnum } from 'class-validator';
+import { IsString, IsInt, IsDateString, IsEnum } from 'class-validator';
 import { BookingStatus } from '../model/booking.model';
 import { PartialType, PickType } from '@nestjs/mapped-types';
 
