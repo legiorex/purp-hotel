@@ -23,6 +23,8 @@ export class BookingDto {
 }
 export class UpdateBookingDto extends PartialType(BookingDto) {}
 
+export class BookingRangeDto extends PickType(BookingDto, ['checkIn', 'checkOut'] as const) {}
+
 export class BookingCheckAvailabilityDto extends PickType(BookingDto, ['roomId', 'checkIn', 'checkOut'] as const) {}
 
 export class CreateBookingDto extends PickType(BookingDto, ['roomId', 'checkIn', 'checkOut'] as const) {}

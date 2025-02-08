@@ -60,4 +60,13 @@ export class BookingService {
   async findAll(): Promise<BookingModel[]> {
     return this.bookingModel.find().exec();
   }
+  async findByRoom(roomId: string): Promise<BookingModel[]> {
+    return this.bookingModel.find({ roomId: new Types.ObjectId(roomId) }).exec();
+  }
+  async findByRange(dto: { checkIn: Date; checkOut: Date }): Promise<BookingModel[]> {
+    const checkIn = new Date(dto.checkIn);
+    const checkOut = new Date(dto.checkOut);
+
+    return this.bookingModel.find({ checkIn: { $gte: checkIn }, checkOut: { $lte: checkOut } }).exec();
+  }
 }
