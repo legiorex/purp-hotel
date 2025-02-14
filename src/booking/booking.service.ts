@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { BookingModel } from './model/booking.model';
-import { Model, Types, FilterQuery } from 'mongoose';
+import { Types, FilterQuery } from 'mongoose';
 import { BookingCheckAvailabilityDto, CreateBookingDto, UpdateBookingDto } from './dto/booking.dto';
-import { RoomModel } from 'src/room/model/room.model';
+import { BookingRepository } from './booking.repository';
+import { RoomRepository } from 'src/room/room.repository';
 
 @Injectable()
 export class BookingService {
   constructor(
-    @InjectModel(BookingModel.name) private readonly bookingModel: Model<BookingModel>,
-    @InjectModel(RoomModel.name) private readonly roomModel: Model<RoomModel>,
+    private readonly bookingRepository: BookingRepository,
+    private readonly roomRepository: RoomRepository,
   ) {}
 
   private async checkOverlapping(dto: BookingCheckAvailabilityDto): Promise<{ _id: Types.ObjectId } | null> {
@@ -24,9 +24,9 @@ export class BookingService {
       checkOut: { $gt: checkIn },
     };
 
-    const result = await this.bookingModel.exists(filter);
+    const result = await this.bookingRepository.findIdByFilter(filter);
 
-    return result as { _id: Types.ObjectId } | null;
+    return result;
   }
 
   async create(dto: CreateBookingDto): Promise<BookingModel | null> {
@@ -36,37 +36,37 @@ export class BookingService {
       return null;
     }
 
-    const room = await this.roomModel.findById(dto.roomId).exec();
+    const room = await this.roomRepository.findById(dto.roomId);
 
     if (!room) {
       return null;
     }
-    return this.bookingModel.create({ ...dto, roomId: room._id });
+    return this.bookingRepository.create(room, dto);
   }
 
   async update(id: string, dto: UpdateBookingDto): Promise<BookingModel | null> {
-    const booking = await this.bookingModel.findById(id);
+    const booking = await this.bookingRepository.findById(id);
 
     if (!booking) {
       return null;
     }
 
-    return await this.bookingModel.findByIdAndUpdate(id, dto, { new: true }).exec();
+    return await this.bookingRepository.update(id, dto);
   }
 
   async findById(id: string): Promise<BookingModel | null> {
-    return this.bookingModel.findById(id).exec();
+    return this.bookingRepository.findById(id);
   }
   async findAll(): Promise<BookingModel[]> {
-    return this.bookingModel.find().exec();
+    return this.bookingRepository.findAll();
   }
   async findByRoom(roomId: string): Promise<BookingModel[]> {
-    return this.bookingModel.find({ roomId: new Types.ObjectId(roomId) }).exec();
+    return this.bookingRepository.findByRoom(roomId);
   }
   async findByRange(dto: { checkIn: Date; checkOut: Date }): Promise<BookingModel[]> {
     const checkIn = new Date(dto.checkIn);
     const checkOut = new Date(dto.checkOut);
 
-    return this.bookingModel.find({ checkIn: { $gte: checkIn }, checkOut: { $lte: checkOut } }).exec();
+    return this.bookingRepository.findByRange({ checkIn, checkOut });
   }
 }
