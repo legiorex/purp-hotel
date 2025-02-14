@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { BookingModel } from './model/booking.model';
 import { Types, FilterQuery } from 'mongoose';
 import { BookingCheckAvailabilityDto, CreateBookingDto, UpdateBookingDto } from './dto/booking.dto';
 import { BookingRepository } from './booking.repository';
 import { RoomRepository } from 'src/room/room.repository';
+import { BOOKING_NOT_FOUND, ROOM_BOOKED } from 'src/const';
 
 @Injectable()
 export class BookingService {
@@ -33,13 +34,13 @@ export class BookingService {
     const isOverlapping = await this.checkOverlapping(dto);
 
     if (isOverlapping) {
-      return null;
+      throw new HttpException(ROOM_BOOKED, HttpStatus.CONFLICT);
     }
 
     const room = await this.roomRepository.findById(dto.roomId);
 
     if (!room) {
-      return null;
+      throw new HttpException(ROOM_BOOKED, HttpStatus.CONFLICT);
     }
     return this.bookingRepository.create(room, dto);
   }
@@ -48,21 +49,29 @@ export class BookingService {
     const booking = await this.bookingRepository.findById(id);
 
     if (!booking) {
-      return null;
+      throw new HttpException(BOOKING_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
     return await this.bookingRepository.update(id, dto);
   }
 
   async findById(id: string): Promise<BookingModel | null> {
-    return this.bookingRepository.findById(id);
+    const booking = await this.bookingRepository.findById(id);
+
+    if (!booking) {
+      throw new HttpException(BOOKING_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    return booking;
   }
+
   async findAll(): Promise<BookingModel[]> {
     return this.bookingRepository.findAll();
   }
+
   async findByRoom(roomId: string): Promise<BookingModel[]> {
     return this.bookingRepository.findByRoom(roomId);
   }
+
   async findByRange(dto: { checkIn: Date; checkOut: Date }): Promise<BookingModel[]> {
     const checkIn = new Date(dto.checkIn);
     const checkOut = new Date(dto.checkOut);
