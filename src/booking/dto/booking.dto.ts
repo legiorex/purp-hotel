@@ -1,6 +1,6 @@
 import { IsString, IsInt, IsDateString, IsEnum } from 'class-validator';
-import { BookingStatus } from '../model/booking.model';
 import { PartialType, PickType } from '@nestjs/mapped-types';
+import { BookingStatus } from 'src/common/enams/booking.enams';
 
 export class BookingDto {
   @IsString()

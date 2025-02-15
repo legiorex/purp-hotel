@@ -4,9 +4,11 @@ import { BookingController } from './booking.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BookingModel, BookingSchema } from './model/booking.model';
 import { RoomModel, RoomSchema } from 'src/room/model/room.model';
+import { BookingRepository } from './booking.repository';
+import { RoomRepository } from 'src/room/room.repository';
 
 @Module({
-  providers: [BookingService],
+  providers: [BookingService, BookingRepository, RoomRepository],
   controllers: [BookingController],
   imports: [
     MongooseModule.forFeature([

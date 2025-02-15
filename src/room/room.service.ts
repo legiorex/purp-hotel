@@ -1,42 +1,75 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { RoomModel } from './model/room.model';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { FindRoomDto, CreateRoomDto, UpdateRoomDto } from './dto/room.dto';
+import { RoomRepository } from './room.repository';
+import { ROOM_EXISTS, ROOM_NOT_FOUND } from 'src/const';
 
 @Injectable()
 export class RoomService {
-  constructor(@InjectModel(RoomModel.name) private readonly roomModel: Model<RoomModel>) {}
+  constructor(private readonly roomRepository: RoomRepository) {}
 
   async create(dto: CreateRoomDto): Promise<RoomModel> {
-    return this.roomModel.create(dto);
+    const room = await this.roomRepository.findByNumber(dto.number);
+
+    if (room) {
+      throw new HttpException(ROOM_EXISTS, HttpStatus.CONFLICT);
+    }
+
+    return this.roomRepository.create(dto);
   }
 
   async findByNumber(number: number): Promise<RoomModel | null> {
-    return this.roomModel.findOne({ number }).exec();
+    const room = await this.roomRepository.findByNumber(number);
+
+    if (!room) {
+      throw new HttpException(ROOM_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    return room;
   }
 
   async findAll(): Promise<RoomModel[]> {
-    return this.roomModel.find().exec();
+    return this.roomRepository.findAll();
   }
 
-  async update(id: string, dto: UpdateRoomDto): Promise<RoomModel | null> {
-    return this.roomModel.findByIdAndUpdate(id, dto, { new: true }).exec();
+  async update(dto: UpdateRoomDto): Promise<RoomModel | null> {
+    let room: RoomModel | null = null;
+
+    if (dto.number) {
+      room = await this.roomRepository.findByNumber(dto.number);
+    }
+
+    if (room && !new Types.ObjectId(room.id as string).equals(dto.id)) {
+      throw new HttpException(ROOM_EXISTS, HttpStatus.CONFLICT);
+    }
+
+    const upDateRoom = this.roomRepository.update(dto);
+
+    if (!upDateRoom) {
+      throw new HttpException(ROOM_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    return upDateRoom;
   }
 
   async delete(id: string): Promise<RoomModel | null> {
-    return this.roomModel.findByIdAndDelete(id).exec();
+    const deletedRoom = this.roomRepository.delete(id);
+    if (!deletedRoom) {
+      throw new HttpException(ROOM_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    return deletedRoom;
   }
 
   async findById(id: string): Promise<RoomModel | null> {
-    return this.roomModel.findById(id).exec();
+    const room = await this.roomRepository.findById(id);
+
+    if (!room) {
+      throw new HttpException(ROOM_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    return room;
   }
 
   async find(dto: FindRoomDto): Promise<RoomModel[]> {
-    return this.roomModel
-      .find({
-        $or: [{ capacity: dto.capacity }, { price: dto.price }],
-      })
-      .exec();
+    return this.roomRepository.find(dto);
   }
 }
