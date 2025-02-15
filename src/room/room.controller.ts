@@ -1,9 +1,6 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Patch, Post } from '@nestjs/common';
-import { RoomModel } from './model/room.model';
-import { CreateRoomDto, FindRoomDto, RoomDto, UpdateRoomDto } from './dto/room.dto';
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { CreateRoomDto, FindRoomDto, UpdateRoomDto } from './dto/room.dto';
 import { RoomService } from './room.service';
-import { ROOM_EXISTS, ROOM_NOT_FOUND } from '../const';
-import { Types } from 'mongoose';
 
 @Controller('room')
 export class RoomController {
