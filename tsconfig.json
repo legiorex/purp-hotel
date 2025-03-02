@@ -19,5 +19,9 @@
     "noFallthroughCasesInSwitch": false,
     "strict": true,
     "strictPropertyInitialization": false,
+    "resolveJsonModule": true,
+    "paths": {
+      "src/*": ["src/*"]
+    }
   }
 }
