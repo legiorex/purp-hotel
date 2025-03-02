@@ -1,7 +1,7 @@
-import { Body, Query, Controller, Get, HttpCode, HttpException, HttpStatus, Param, Patch, Post } from '@nestjs/common';
+import { Body, Query, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { BookingService } from './booking.service';
-import { BOOKING_NOT_FOUND, ROOM_BOOKED } from 'src/const';
 import { BookingRangeDto, CreateBookingDto, UpdateBookingDto } from './dto/booking.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
 
 @Controller('booking')
 export class BookingController {
@@ -12,6 +12,7 @@ export class BookingController {
     return await this.bookingService.create(dto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('all')
   async getAll() {
     return this.bookingService.findAll();
