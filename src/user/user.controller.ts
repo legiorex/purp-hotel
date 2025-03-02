@@ -1,6 +1,6 @@
 import { Controller, Get, Param, Delete, Query } from '@nestjs/common';
 import { UserService } from './user.service';
-import { DeleteUserDto, GetUserByEmailDto, GetUserByIdDto } from './dto/user.dto';
+import { GetUserByEmailDto, GetUserByIdDto } from './dto/user.dto';
 
 @Controller('user')
 export class UserController {
