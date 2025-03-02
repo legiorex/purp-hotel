@@ -30,11 +30,11 @@ export class AuthService {
     return await this.userRepository.createUser(userData);
   }
   async login(dto: LoginDto) {
-    const { email } = await this.validateUser(dto);
-    return this.getAccessToken(email);
+    const payload = await this.validateUser(dto);
+    return this.getAccessToken(payload);
   }
 
-  async validateUser({ email, password }: LoginDto): Promise<Pick<UserModel, 'email'>> {
+  async validateUser({ email, password }: LoginDto): Promise<Pick<UserModel, 'email' | 'role'>> {
     const user = await this.userRepository.getUserByEmail({ email });
     if (!user) {
       throw new HttpException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -45,12 +45,10 @@ export class AuthService {
       throw new HttpException(WRONG_PASSWORD, HttpStatus.UNAUTHORIZED);
     }
 
-    return { email: user.email };
+    return { email: user.email, role: user.role };
   }
 
-  async getAccessToken(email: string) {
-    const payload = { email };
-
+  async getAccessToken(payload: Pick<UserModel, 'email' | 'role'>) {
     return {
       access_token: await this.jwtService.signAsync(payload),
     };

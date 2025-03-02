@@ -1,4 +1,5 @@
 import { OmitType, PickType } from '@nestjs/mapped-types';
+import { Type } from 'class-transformer';
 import { IsEmail, IsEnum, IsPhoneNumber, IsString } from 'class-validator';
 import { Role } from 'src/common/enams/role.enam';
 
@@ -24,5 +25,10 @@ export class UserDto {
 
 export class CreateUserDto extends OmitType(UserDto, ['id']) {}
 export class DeleteUserDto extends PickType(UserDto, ['id']) {}
-export class GetUserByIdDto extends PickType(UserDto, ['id']) {}
+// export class GetUserByIdDto extends PickType(UserDto, ['id']) {}
 export class GetUserByEmailDto extends PickType(UserDto, ['email']) {}
+export class GetUserByIdDto {
+  @IsString()
+  @Type(() => String)
+  id: string;
+}
