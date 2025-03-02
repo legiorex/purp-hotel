@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/user.dto';
+import { CreateUserDto, DeleteUserDto, GetUserByEmailDto, GetUserByIdDto } from './dto/user.dto';
 import { UserRepository } from './user.repository';
 import { USER_ALREADY_EXIST } from 'src/const';
 
@@ -17,15 +17,15 @@ export class UserService {
     return this.userRepository.createUser(dto);
   }
 
-  // findAll() {
-  //   return `This action returns all user`;
-  // }
+  async deleteUser({ id }: DeleteUserDto) {
+    return this.userRepository.deleteUser({ id });
+  }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} user`;
-  // }
+  async getUserByEmail({ email }: GetUserByEmailDto) {
+    return this.userRepository.getUserByEmail({ email });
+  }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} user`;
-  // }
+  async getUserById({ id }: GetUserByIdDto) {
+    return this.userRepository.getUserById({ id });
+  }
 }
