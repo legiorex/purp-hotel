@@ -2,14 +2,21 @@ import { Body, Query, Controller, Get, Param, Patch, Post, UseGuards } from '@ne
 import { BookingService } from './booking.service';
 import { BookingRangeDto, CreateBookingDto, UpdateBookingDto } from './dto/booking.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
+import { EmailUser } from 'src/common/decorators/email-user.decorator';
+import { UserModel } from 'src/user/model/user.model';
 
 @Controller('booking')
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post('create')
-  async create(@Body() dto: CreateBookingDto) {
-    return await this.bookingService.create(dto);
+  async create(
+    @EmailUser()
+    user: Pick<UserModel, 'email' | 'role'>,
+    @Body() dto: CreateBookingDto,
+  ) {
+    return await this.bookingService.create(dto, user.email);
   }
 
   @UseGuards(JwtAuthGuard)
