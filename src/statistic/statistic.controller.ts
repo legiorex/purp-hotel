@@ -6,7 +6,7 @@ export class StatisticController {
   constructor(private readonly statisticService: StatisticService) {}
 
   @Get('by-range')
-  async getHello() {
+  async getStatisticByRange() {
     return this.statisticService.getStatisticByRange();
   }
 }

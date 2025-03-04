@@ -10,6 +10,9 @@ export class BookingDto {
   @IsString()
   roomId: string;
 
+  @IsString()
+  userId: string;
+
   @IsEnum(BookingStatus)
   status: BookingStatus;
 
@@ -29,4 +32,4 @@ export class BookingRangeDto extends PickType(BookingDto, ['checkIn', 'checkOut'
 
 export class BookingCheckAvailabilityDto extends PickType(BookingDto, ['roomId', 'checkIn', 'checkOut'] as const) {}
 
-export class CreateBookingDto extends PickType(BookingDto, ['roomId', 'checkIn', 'checkOut'] as const) {}
+export class CreateBookingDto extends PickType(BookingDto, ['roomId', 'userId', 'checkIn', 'checkOut'] as const) {}
