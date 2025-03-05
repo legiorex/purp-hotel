@@ -1,8 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Document, Types } from 'mongoose';
-import { BookingStatus } from 'src/common/enams/booking.enam';
+import { BookingStatus } from 'src/common/enams/booking.enams';
 import { RoomModel } from 'src/room/model/room.model';
-import { UserModel } from 'src/user/model/user.model';
 
 export type BookingDocument = HydratedDocument<BookingModel>;
 
@@ -10,9 +9,6 @@ export type BookingDocument = HydratedDocument<BookingModel>;
 export class BookingModel extends Document {
   @Prop({ required: true, type: Types.ObjectId, ref: RoomModel.name })
   roomId: Types.ObjectId;
-
-  @Prop({ required: true, type: Types.ObjectId, ref: UserModel.name })
-  userId: Types.ObjectId;
 
   @Prop({ enum: BookingStatus, default: BookingStatus.PENDING })
   status: BookingStatus;
@@ -28,4 +24,4 @@ export class BookingModel extends Document {
 }
 
 export const BookingSchema = SchemaFactory.createForClass(BookingModel);
-BookingSchema.index({ roomId: 1, userId: 1, checkIn: 1, checkOut: 1 });
+BookingSchema.index({ roomId: 1, checkIn: 1, checkOut: 1 });
