@@ -65,14 +65,6 @@ export class BookingRepository {
     return this.bookingModel.find({ roomId: new Types.ObjectId(roomId) }).exec();
   }
   async findByRange(dto: { checkIn: Date; checkOut: Date }): Promise<BookingModel[]> {
-    // return await this.bookingModel
-    //   .aggregate()
-    //   .match({
-    //     checkIn: { $gte: dto.checkIn },
-    //     checkOut: { $lte: dto.checkOut },
-    //   })
-    //   .exec();
-
     return this.bookingModel.find({ checkIn: { $gte: dto.checkIn }, checkOut: { $lte: dto.checkOut } }).exec();
   }
 }
