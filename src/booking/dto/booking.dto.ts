@@ -1,6 +1,6 @@
 import { IsString, IsInt, IsDateString, IsEnum, Validate } from 'class-validator';
 import { PartialType, PickType } from '@nestjs/mapped-types';
-import { BookingStatus } from 'src/common/enams/booking.enams';
+import { BookingStatus } from 'src/common/enams/booking.enam';
 import { IsBefore } from 'src/common/validators/date-range.validator';
 
 export class BookingDto {

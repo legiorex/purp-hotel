@@ -17,9 +17,15 @@ const testDto: CreateRoomDto = {
   number: ROOM_NUMBER,
 };
 
+const userAdmin = {
+  email: 'admin@mail.com',
+  password: 'admin!@',
+};
+
 describe('RoomController (e2e)', () => {
   let app: INestApplication<App>;
   let createdId: string;
+  let token: string;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -28,12 +34,16 @@ describe('RoomController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
+    const { body } = await request(app.getHttpServer()).post('/auth/login').send(userAdmin);
+
+    token = body.access_token;
   });
 
   it('/room/create (POST) - success', async () => {
     return request(app.getHttpServer())
       .post('/room/create')
       .send(testDto)
+      .set('Authorization', `Bearer ${token}`)
       .expect(201)
       .then(({ body }: request.Response) => {
         createdId = body._id;
@@ -60,7 +70,10 @@ describe('RoomController (e2e)', () => {
   });
 
   it('room/:id (DELETE) - success', async () => {
-    return request(app.getHttpServer()).delete(`/room/${createdId}`).expect(200);
+    return request(app.getHttpServer())
+      .delete(`/room/${createdId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200);
   });
 
   afterAll(() => {

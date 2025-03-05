@@ -4,13 +4,15 @@ import { Types, FilterQuery } from 'mongoose';
 import { BookingCheckAvailabilityDto, CreateBookingDto, UpdateBookingDto } from './dto/booking.dto';
 import { BookingRepository } from './booking.repository';
 import { RoomRepository } from 'src/room/room.repository';
-import { BOOKING_NOT_FOUND, ROOM_BOOKED } from 'src/const';
+import { BOOKING_NOT_FOUND, ROOM_BOOKED, USER_NOT_FOUND } from 'src/const';
+import { UserRepository } from 'src/user/user.repository';
 
 @Injectable()
 export class BookingService {
   constructor(
     private readonly bookingRepository: BookingRepository,
     private readonly roomRepository: RoomRepository,
+    private readonly userRepository: UserRepository,
   ) {}
 
   private async checkOverlapping(dto: BookingCheckAvailabilityDto): Promise<{ _id: Types.ObjectId } | null> {
@@ -30,7 +32,7 @@ export class BookingService {
     return result;
   }
 
-  async create(dto: CreateBookingDto): Promise<BookingModel | null> {
+  async create(dto: CreateBookingDto, userEmail: string): Promise<BookingModel | null> {
     const isOverlapping = await this.checkOverlapping(dto);
 
     if (isOverlapping) {
@@ -42,7 +44,14 @@ export class BookingService {
     if (!room) {
       throw new HttpException(ROOM_BOOKED, HttpStatus.CONFLICT);
     }
-    return this.bookingRepository.create(room, dto);
+
+    const user = await this.userRepository.getUserByEmail({ email: userEmail });
+
+    if (!user) {
+      throw new HttpException(USER_NOT_FOUND, HttpStatus.CONFLICT);
+    }
+
+    return this.bookingRepository.create(room, user, dto);
   }
 
   async update(id: string, dto: UpdateBookingDto): Promise<BookingModel | null> {
