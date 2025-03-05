@@ -1,5 +1,22 @@
 version: '3.8'
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: purp_hotel_app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://${MONGO_LOGIN}:${MONGO_PASSWORD}@mongodb:27017/${MONGO_DATABASE}?authSource=admin
+      - PORT=3000
+    depends_on:
+      - mongodb
+    env_file:
+      - .env
+
   mongodb:
     image: mongo:latest
     container_name: mongodb_hotel
