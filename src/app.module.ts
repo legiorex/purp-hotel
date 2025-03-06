@@ -10,13 +10,16 @@ import { StatisticModule } from './statistic/statistic.module';
 
 @Module({
   imports: [
-    RoomModule,
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: process.env.NODE_ENV === 'production' ? '.env.production' : '.env',
+    }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: mongooseConfig,
     }),
+    RoomModule,
     BookingModule,
     AuthModule,
     UserModule,
