@@ -1,9 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+
   app.setGlobalPrefix('api');
 
   app.useGlobalPipes(
@@ -15,6 +18,12 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(process.env.PORT ?? 3000);
+  app.enableCors();
+
+  const port = configService.get('PORT') || 3000;
+  console.log(`Application starting on port ${port}`);
+  console.log(`MongoDB host: ${configService.get('MONGO_HOST')}`);
+
+  await app.listen(port);
 }
 void bootstrap();
