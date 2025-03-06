@@ -8,6 +8,7 @@ services:
     restart: always
     ports:
       - "3000:3000"
+      - "27017:27017"
     environment:
       - NODE_ENV=production
       - MONGO_LOGIN=${MONGO_LOGIN}
