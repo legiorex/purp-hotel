@@ -18,6 +18,8 @@ services:
       - mongodb
     env_file:
       - .env
+    networks:
+      - app-network
 
   mongodb:
     image: mongo:latest
@@ -33,6 +35,12 @@ services:
       - mongo_data:/data/db
     env_file:
       - .env
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
 
 volumes:
   mongo_data:
