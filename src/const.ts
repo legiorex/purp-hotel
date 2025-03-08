@@ -7,3 +7,6 @@ export const USER_ALREADY_EXIST = 'User with this email already exist';
 export const USER_NOT_FOUND = 'User with this email not found';
 export const WRONG_PASSWORD = 'Wrong password';
 export const USER_NOT_AUTHORIZED = 'User not authorized';
+export const FILE_NOT_FOUND = 'File not found';
+export const FILE_NOT_IMAGE = 'File is not an image';
+export const FILE_NOT_VALID = 'File is not valid';
