@@ -6,6 +6,7 @@ import { BookingRepository } from './booking.repository';
 import { RoomRepository } from 'src/room/room.repository';
 import { BOOKING_NOT_FOUND, ROOM_BOOKED, USER_NOT_FOUND } from 'src/const';
 import { UserRepository } from 'src/user/user.repository';
+import { TelegramService } from 'src/telegram/telegram.service';
 
 @Injectable()
 export class BookingService {
@@ -13,6 +14,7 @@ export class BookingService {
     private readonly bookingRepository: BookingRepository,
     private readonly roomRepository: RoomRepository,
     private readonly userRepository: UserRepository,
+    private readonly telegramService: TelegramService,
   ) {}
 
   private async checkOverlapping(dto: BookingCheckAvailabilityDto): Promise<{ _id: Types.ObjectId } | null> {
@@ -50,6 +52,10 @@ export class BookingService {
     if (!user) {
       throw new HttpException(USER_NOT_FOUND, HttpStatus.CONFLICT);
     }
+
+    const message = `New booking from ${userEmail} /n for room ${room.number} /n from ${dto.checkIn} to ${dto.checkOut}`;
+
+    this.telegramService.sendMessage(message);
 
     return this.bookingRepository.create(room, user, dto);
   }
