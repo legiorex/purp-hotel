@@ -4,11 +4,20 @@ import { format } from 'date-fns';
 import { path } from 'app-root-path';
 import { ensureDir, writeFile } from 'fs-extra';
 import * as sharp from 'sharp';
-import { FILE_NOT_IMAGE } from 'src/const';
+import { FILE_NOT_IMAGE, ROOM_NOT_FOUND } from 'src/const';
+import { RoomRepository } from 'src/room/room.repository';
 
 @Injectable()
 export class FilesService {
-  async uploadImageFile(file: Express.Multer.File): Promise<FileDto[]> {
+  constructor(private readonly roomRepository: RoomRepository) {}
+
+  async uploadImageFile(file: Express.Multer.File, roomId: string): Promise<FileDto[]> {
+    const room = await this.roomRepository.findById(roomId);
+
+    if (!room) {
+      throw new HttpException(ROOM_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
     if (!file.mimetype.includes('image')) {
       throw new HttpException(FILE_NOT_IMAGE, HttpStatus.BAD_REQUEST);
     }
@@ -17,7 +26,12 @@ export class FilesService {
 
     const originalname = `${file.originalname.split('.')[0]}.webp`;
 
-    return this.saveFiles([file, { ...file, originalname, buffer: bufferWebP }]);
+    const saveFiles = await this.saveFiles([file, { ...file, originalname, buffer: bufferWebP }]);
+
+    room.images.push(...saveFiles);
+    await room.save();
+
+    return saveFiles;
   }
 
   async saveFiles(files: Express.Multer.File[]): Promise<FileDto[]> {
@@ -36,6 +50,6 @@ export class FilesService {
   }
 
   convertToWebP(file: Buffer): Promise<Buffer> {
-    return sharp(file).webp().toBuffer();
+    return sharp(file).resize({ width: 500, fit: 'cover' }).webp().toBuffer();
   }
 }

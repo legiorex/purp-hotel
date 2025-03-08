@@ -1,4 +1,4 @@
-import { Controller, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Role } from 'src/common/enams/role.enam';
@@ -15,7 +15,7 @@ export class FilesController {
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<FileDto[]> {
-    return this.filesService.uploadImageFile(file);
+  async uploadFile(@UploadedFile() file: Express.Multer.File, @Query('roomId') roomId: string): Promise<FileDto[]> {
+    return this.filesService.uploadImageFile(file, roomId);
   }
 }
