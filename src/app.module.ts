@@ -8,6 +8,8 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { StatisticModule } from './statistic/statistic.module';
 import { FilesModule } from './files/files.module';
+import { TelegramModule } from './telegram/telegram.module';
+import { telegramConfig } from './config/tlegram.config';
 
 @Module({
   imports: [
@@ -19,6 +21,11 @@ import { FilesModule } from './files/files.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: mongooseConfig,
+    }),
+    TelegramModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: telegramConfig,
     }),
     RoomModule,
     BookingModule,
